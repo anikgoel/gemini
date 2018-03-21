@@ -61,14 +61,14 @@ class Gemini implements PublicApi, PrivateApi
         string $secret = '',
         HttpClient $client = null,
         MessageFactory $messageFactory = null,
-        boolean $testMode = false
+        $testMode = false
     ) {
         $this->key = $key;
         $this->secret = $secret;
         $this->client = $client ?: HttpClientDiscovery::find();
         $this->messageFactory = $messageFactory ?: MessageFactoryDiscovery::find();
         if($testMode){
-            $this->BASE_URI = 'https://api.sandbox.gemini.com/v1';
+            $this->BASE_URI = 'https://api.sandbox.gemini.com/v1/';
         }
     }
 
