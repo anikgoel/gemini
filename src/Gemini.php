@@ -15,7 +15,7 @@ use Samrap\Gemini\Exceptions\GeminiException;
 class Gemini implements PublicApi, PrivateApi
 {
     /** @var string */
-    const BASE_URI = 'https://api.gemini.com/v1/';
+    protected $BASE_URI = 'https://api.gemini.com/v1/';
 
     /** @var string */
     const API_VERSION = 'v1';
@@ -60,12 +60,16 @@ class Gemini implements PublicApi, PrivateApi
         string $key = '',
         string $secret = '',
         HttpClient $client = null,
-        MessageFactory $messageFactory = null
+        MessageFactory $messageFactory = null,
+        boolean $testMode = false
     ) {
         $this->key = $key;
         $this->secret = $secret;
         $this->client = $client ?: HttpClientDiscovery::find();
         $this->messageFactory = $messageFactory ?: MessageFactoryDiscovery::find();
+        if($testMode){
+            $this->BASE_URI = 'https://api.sandbox.gemini.com/v1';
+        }
     }
 
     /**
@@ -222,7 +226,7 @@ class Gemini implements PublicApi, PrivateApi
      */
     public function publicRequest(string $api, array $urlParameters = []) : array
     {
-        $uri = self::BASE_URI.trim($api, '/');
+        $uri = $this->BASE_URI.trim($api, '/');
 
         if (! empty($urlParameters)) {
             $uri .= '?'.http_build_query($urlParameters);
@@ -243,7 +247,7 @@ class Gemini implements PublicApi, PrivateApi
      */
     public function privateRequest(string $api, array $data = []) : array
     {
-        $uri = self::BASE_URI.trim($api, '/');
+        $uri = $this->BASE_URI.trim($api, '/');
         $endpoint = sprintf('/%s/%s', self::API_VERSION, trim($api, '/'));
         $payload = new Payload($endpoint, $data);
         $request = $this->messageFactory->createRequest('POST', $uri, [
