@@ -32,7 +32,7 @@ class Payload
     {
         $this->endpoint = $endpoint;
         $this->data = $data;
-        $this->nonce = round(microtime(true));
+        $this->nonce = round(microtime(true)*10000);
     }
 
     /**
